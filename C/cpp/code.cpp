@@ -31,11 +31,7 @@ size_t getPairsNumber(const std::vector<int32_t> &numbers) {
     std::unordered_map<int32_t, int32_t> remainderNumbers;
     for (const auto number : numbers) {
         int32_t remainder = number % DELIM;
-        if (remainderNumbers.find(remainder) == remainderNumbers.end()) {
-            remainderNumbers[remainder] = 1;
-        } else {
-            remainderNumbers[remainder] += 1;
-        }
+        remainderNumbers[remainder] += 1;
     }
     size_t totalPairs = 0;
     for (const auto &[remainder, totalNumber] : remainderNumbers) {
