@@ -1,26 +1,71 @@
 #include <vector>
 #include <iostream>
+#include <queue>
 
-using namespace std;
+/*
+Условие задачи.
+В этой задаче вы будете перекладывать камни. 
+Изначально есть n кучек камней. Кучка i весит a i килограммов. 
+Кучки можно объединять. При объединении кучек i и j затрачивается a i + a j единиц энергии, 
+при этом две исходные кучки пропадают и появляется кучка весом a i + a j . 
+Определите наименьшее количество энергии, которое надо затратить для объединения всех кучек в одну.
 
-long long getEnergyForUnion(const vector<int>& stones) {
-    // your code goes here
-    return 0;
+Первое предложенное решение (Вердикт: OK).
+Так как при мерже образуется камень веса a i + a j, образовавшийся камень тоже нужно будет мержить
+с каким-то другим и так далее. При следующем мерже образовавшегося камня с каким-то другим (это может
+произойти не сразу, но рано или поздно произойдет) происходит мерж камней с весами (a i + a j) и b.
+Понятно, что в итоговую сумму стоимости мержа всех камней тогда изначальные веса a i и a j войдут, ровно
+как и все остальные камни, несколько раз. Значит итоговую сумму мержа можно записать как 
+cost_f = X1 * a1 + ... + Xn * an, где Xi -- сколько раз встречалось ai  при мержах.
+Выстроим эти Xi-е по невозрастанию: Y1 >= ... >= Yn, получим новую последовательность
+cost_f = Y1 * b1 + ... + Yn * bn (просто какие-то пары в сумме перетасовались).
+Отсюда видно, что cost_f -> min <=> b1 <= ... <= bn, то есть при бОльших коэффициентах
+стояли меньшие из изначальных веса.
+
+Сложность: создадим очередь с приоритетом, только поменяем порядок -- в начале очереди
+будут идти элементы с меньшими весами. Мержим два первых элемента из очереди (если такие есть),
+кладем результат обратно в очередь. Доступ до первого элемента двоичной кучи 
+(через которую реализована очередь с приоритетом) O(1), для доступа ко второму
+нужно извлечь первый O(logn) и его тоже извлечь O(logn), смержить их и положить обратно в кучу результат.
+Здесь итоговая сложность O(logn). На каждом шаге уменьшаем общее количество камней на 1, всего камней n,
+поэтому операцию мержа нужно будет проделать n-1 раз.
+Итоговая сложность: O(n logn).
+*/
+
+int64_t getFullUnionEnergy(const std::vector<int32_t>& stones) {
+    if (stones.size() <= 1) {
+        return 0;
+    }
+    int64_t unionEnergy = 0;
+    // greater -- в начале min, в конце max. По умолчанию std::less -- в начале max, в конце min
+    std::priority_queue<int64_t, std::vector<int64_t>, std::greater<int64_t>>
+        energyQueue(stones.begin(), stones.end());
+    while (energyQueue.size() > 1) {
+        auto first = energyQueue.top();
+        energyQueue.pop();
+        auto second = energyQueue.top();
+        energyQueue.pop();
+        auto mergeRes = first + second;
+        unionEnergy += mergeRes;
+        energyQueue.push(mergeRes);
+
+    }
+    return unionEnergy;
 }
 
-vector<int> readList(int n) {
-    vector<int> res(n);
-    for (int i = 0; i < n; i++) {
-        cin >> res[i];
+std::vector<int32_t> readList(int32_t n) {
+    std::vector<int32_t> res(n);
+    for (int32_t i = 0; i < n; i++) {
+        std::cin >> res[i];
     }
     return res;
 }
 
 int main() {
-    int n;
-    cin >> n;
-    vector<int> stones = readList(n);
-
-    cout << getEnergyForUnion(stones);
+    int32_t n;
+    std::cin >> n;
+    std::vector<int32_t> stones = readList(n);
+    std::cout << getFullUnionEnergy(stones);
+    return 0;
 }
 
