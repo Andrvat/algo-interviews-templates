@@ -79,9 +79,9 @@ int main() {
     std::cin >> stringToCheck;
 
     if (stringMatchesTemplate(stringToCheck, templateString)) {
-        std::cout << "YES" << endl;
+        std::cout << "YES" << std::endl;
     } else {
-        std::cout << "NO" << endl;
+        std::cout << "NO" << std::endl;
     }
 }
 
