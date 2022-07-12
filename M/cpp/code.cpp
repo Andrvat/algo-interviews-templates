@@ -1,30 +1,63 @@
 #include <iostream>
 #include <vector>
+#include <unordered_map>
+#include <map>
 
 using namespace std;
 
 
 struct HistoricalArray {
-    int size;
-    HistoricalArray(int n) : size(n) {
+    static constexpr int DEFAULT_INITIAL_VALUE = 0;
 
+    __attribute__((unused)) int size;
+
+    int currentEra;
+
+    std::vector<std::vector<int32_t>> historicalValues;
+
+    std::vector<std::unordered_map<size_t, size_t>> eraIndexes;
+
+    explicit HistoricalArray(int n) : size(n) {
+        historicalValues.resize(n, {});
+        eraIndexes.resize(n, {});
+        currentEra = 0;
     }
-    
-    void beginNewEra(int eraId) {
 
+    void beginNewEra(int eraId) {
+        size_t currentValue = 0;
+        for (auto &indexes: eraIndexes) {
+            if (indexes.find(currentEra) == indexes.end()) {
+                if (!historicalValues[currentValue].empty()) {
+                    indexes[currentEra] = historicalValues[currentValue].size() - 1;
+                }
+            }
+            currentValue++;
+        }
+        currentEra = eraId;
     }
 
     void set(int index, int value) {
-
+        if (eraIndexes[index].find(currentEra) != eraIndexes[index].end()) {
+            historicalValues[index][eraIndexes[index][currentEra]] = value;
+        } else {
+            auto valueFrequency = historicalValues[index].size();
+            eraIndexes[index][currentEra] = valueFrequency;
+            historicalValues[index].push_back(value);
+        }
     }
 
     int get(int index, int eraId) {
-        return -1;
+        if (eraIndexes[index].find(eraId) == eraIndexes[index].end()) {
+            return DEFAULT_INITIAL_VALUE;
+        }
+        return historicalValues[index][eraIndexes[index][eraId]];
     }
 };
 
 
 int main(int argc, char const *argv[]) {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
     int n;
     cin >> n;
     HistoricalArray arr(n);
@@ -47,4 +80,5 @@ int main(int argc, char const *argv[]) {
             cout << arr.get(index, eraId) << endl;
         }
     }
+    return 0;
 }
