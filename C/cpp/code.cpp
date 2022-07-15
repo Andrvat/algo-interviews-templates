@@ -27,35 +27,36 @@ using namespace std;
 
 constexpr int32_t DELIM = 200;
 
-size_t getPairsNumber(const std::vector<int32_t> &numbers) {
-    std::unordered_map<int32_t, int32_t> remainderNumbers;
+int64_t getPairsNumber(const std::vector<int32_t> &numbers) {
+    std::unordered_map<int64_t, int64_t> remainderNumbers;
     for (const auto number : numbers) {
-        int32_t remainder = number % DELIM;
+        int64_t remainder = number % DELIM;
         remainderNumbers[remainder] += 1;
     }
-    size_t totalPairs = 0;
+    int64_t totalPairs = 0;
     for (const auto &[remainder, totalNumber] : remainderNumbers) {
         totalPairs += totalNumber * (totalNumber - 1) / 2;
     }
     return totalPairs;
 }
 
-size_t readNumber() {
-    size_t x;
+int64_t readNumber() {
+    int64_t x;
     cin >> x;
     return x;
 }
 
-vector<int32_t> readList(size_t n) {
+vector<int32_t> readList(int64_t n) {
     vector<int32_t> res(n);
-    for (size_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         cin >> res[i];
     }
     return res;
 }
 
 int main() {
-    size_t n = readNumber();
+    int64_t n = readNumber();
     vector<int32_t> numbers = readList(n);
     cout << getPairsNumber(numbers);
+    return 0;
 }
